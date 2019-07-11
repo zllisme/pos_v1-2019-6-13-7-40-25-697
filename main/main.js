@@ -1,20 +1,19 @@
 'use strict';
+//const fixtures = require('../test/fixtures');
+const allItems = loadAllItems();
+const promotion = loadPromotions();
 
 const isBarcodeValid = (barcodes) => {
     let itemBarcodes = [];
-    let allItems = loadAllItems();
     for(let i = 0; i < allItems.length; i++) {
         itemBarcodes.push(allItems[i].barcode);
     }
-    let valid = [];
     let validBarcodeCount = 0;
-    console.log(itemBarcodes);
     for(let i = 0; i < barcodes.length; i++) {
         if(itemBarcodes.indexOf(barcodes[i].split('-')[0]) > -1) {
             validBarcodeCount++;
         }
     }
-    console.log(validBarcodeCount);
     if(validBarcodeCount == barcodes.length){
         return true;
     }
@@ -47,7 +46,6 @@ const getBarcodeDistinct = (barcodeCount) => {
 
 const getItemCart = (barcodeDistinct) => {
     let itemCart = [];
-    let allItems = loadAllItems();
     for(let i = 0; i < barcodeDistinct.length; i++){
         for(let j = 0; j < allItems.length; j++) {
             if(barcodeDistinct[i] === allItems[j]['barcode']) {
@@ -65,7 +63,6 @@ const getItemCartPromotion = (barcodeCount, itemCart) => {
     let itemCartEachPromotion = {};
     let itemCartPromotion = {};
     let totalPromotion = 0;
-    let promotion = loadPromotions();
     for(let i = 0; i < itemCart.length; i++) {
         let barcode = itemCart[i]['barcode'];
         let price = itemCart[i]['price'];
@@ -99,13 +96,14 @@ const createReceipt = (barcodeCount, itemCart, itemCartPromotion) => {
 };
 
 const printReceipt = (barcodes) => { 
-    if(isBarcodeValid(barcodes)) {
+    if(!isBarcodeValid(barcodes)) {
         console.log("[ERROR]: the barcode list has invalid barcode, please enter again!");
         return;
     }   
     let barcodeCount = getBarcodeCount(barcodes);
     let barcodeDistinct = getBarcodeDistinct(barcodeCount);
-    let itemCart = getItemCart(barcodesDistinct);
+    let itemCart = getItemCart(barcodeDistinct);
     let itemCartPromotion = getItemCartPromotion(barcodeCount, itemCart);
-    console.log(createReceipt(barcodeCount, itemCart, itemCartPromotion));
+    let receipt = createReceipt(barcodeCount, itemCart, itemCartPromotion);
+    console.log(receipt);
 }
